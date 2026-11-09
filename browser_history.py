@@ -5,7 +5,6 @@ from stack import Stack
 DEFAULT_CAPACITY = 50
 _EXPORT_HEADER = "#BROWSER_HISTORY v1"
 
-
 class _DeletedRecord:
     __slots__ = ("node", "prev_anchor", "next_anchor",
                  "was_current", "fallback")
@@ -16,7 +15,6 @@ class _DeletedRecord:
         self.next_anchor = next_anchor
         self.was_current = was_current
         self.fallback = fallback
-
 
 class BrowserHistory:
     def __init__(self, homepage, capacity=DEFAULT_CAPACITY):
@@ -110,3 +108,43 @@ class BrowserHistory:
 
     def display_history(self):
         print(self.history_string())
+
+    # delete & restore
+    def delete_history(self):
+        self._list.clear()
+        self._deleted.clear()
+        self.current = None
+
+    Delete_history = delete_history
+
+    def delete_url(self, url, all_matches=True):
+        self._check_url(url)
+        matches = self._list.find_all(url)
+        if not all_matches:
+            matches = matches[-1:]
+        for node in matches:
+            prev_a, next_a = node.prev, node.next
+            was_current = node is self.current
+            if was_current:
+                self.current = prev_a if prev_a is not None else next_a
+            self._list.remove(node)
+            self._deleted.push(_DeletedRecord(node, prev_a, next_a, was_current, self.current))
+        return len(matches)
+
+    def restore(self):
+        if self._deleted.is_empty():
+            return None
+        if len(self._list) >= self.capacity:
+            return None 
+        rec = self._deleted.pop()
+        node = rec.node
+        if rec.prev_anchor is not None and rec.prev_anchor.in_list:
+            self._list.insert_after(rec.prev_anchor, node)
+        elif rec.next_anchor is not None and rec.next_anchor.in_list:
+            self._list.insert_before(rec.next_anchor, node)
+        else:
+            self._list.append_tail(node)
+        if self.current is None or (rec.was_current and self.current is rec.fallback):
+            self.current = node
+        return node.url
+    
