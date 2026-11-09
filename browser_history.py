@@ -147,4 +147,17 @@ class BrowserHistory:
         if self.current is None or (rec.was_current and self.current is rec.fallback):
             self.current = node
         return node.url
+    def export_history(self, path): 
+           cur_idx= -1
+           lines =[]
+           for i, node in enumerate(self._list):
+               if node is self.current:
+                   cur_idx=i
+               lines.append(f"{self._clean(node.url)}\t{self._clean(node.title)}\t{node.timestamp}")
+           with open(path,"w", encoding="utf-8") as f:
+               f.write(_EXPORT_HEADER +"\n")
+               f.write(f"#current={cur_idx}\n")
+               for line in lines:
+                   f.write(line +"\n")
+           return len(lines)
     
