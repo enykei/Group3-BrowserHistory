@@ -147,6 +147,7 @@ class BrowserHistory:
         if self.current is None or (rec.was_current and self.current is rec.fallback):
             self.current = node
         return node.url
+    
     def export_history(self, path): 
            cur_idx= -1
            lines =[]
@@ -160,4 +161,39 @@ class BrowserHistory:
                for line in lines:
                    f.write(line +"\n")
            return len(lines)
-    
+    def import_history(self,path):
+            with open(path,"r",encoding="utf-8") as f:
+                raw = [ln.rstrip("\n") for ln in f]
+            if not raw or raw[0].strip() != _EXPORT_HEADER:
+                raise ValueError("not a valid history file (missing header)")
+            if len(raw) <2 or not raw[1].startswith("#current="):
+                raise ValueError("invalid history file (missing #current line)")
+            try:
+                cur_idx =int(raw[1].split("=", 1)[1])
+            except ValueError:
+                raise ValueError("invalid #current value")
+            entries =[]
+            for n, line in enumerate(raw[2:], start=3):
+                if not line.strip():
+                    continue
+                parts =line.split("\t")
+                if len(parts) !=3 or not parts[0].strip():
+                    raise ValueError(f"malformed entry on line {n}")
+                entries.append(parts)
+            valid = (0 <=cur_idx <len(entries)) if entries else (cur_idx ==-1)
+            if not valid:
+                raise ValueError("#current index is out of range")
+            
+            #application of the values
+            drop = max(0, len(entries) - self.capacity)
+            entries = entries[drop:]
+            cur_idx = max(0, cur_idx - drop) if entries else -1
+            self._list.clear()
+            self._deleted.clear()
+            self.current = None
+            for i, (url, title, ts) in enumerate(entries):
+                node = self._list.append_tail(Node(url, title, ts))
+                if i == cur_idx:
+                    self.current = node
+            return len(entries)
+                                    
