@@ -116,7 +116,7 @@ class BrowserHistory:
         self._deleted.clear()
         self.current = None
 
-    Delete_history = delete_history
+    Delete_histroy = delete_history
 
     def delete_url(self, url, all_matches=True):
         self._check_url(url)
