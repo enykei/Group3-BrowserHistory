@@ -1,11 +1,11 @@
-class _StackItem:
+class _StackItem: #stores the value into the stack and a pointer.
     __slots__ = ("value", "below")
 
     def __init__(self, value, below):
         self.value = value
         self.below = below
 
-
+#
 class Stack:
     def __init__(self):
         self._top = None
@@ -15,6 +15,7 @@ class Stack:
         self._top = _StackItem(value, self._top)
         self._size += 1
 
+    #poping the top item of the stack and returning it 
     def pop(self):
         if self._top is None:
             raise IndexError("pop from empty stack")
@@ -22,7 +23,7 @@ class Stack:
         self._top = item.below
         self._size -= 1
         return item.value
-
+    #poping the item without removing it.
     def peek(self):
         if self._top is None:
             raise IndexError("peek from empty stack")

@@ -6,7 +6,8 @@ from browser_history import BrowserHistory
 from doubly_linked_list import DoublyLinkedList       
 from node import Node                                 
 from stack import Stack                               
-#import main as cli      
+import main as cli      
+
 #message being printed as a result of an error in the code is E402                            
 
 
@@ -57,7 +58,7 @@ class TestStructures(unittest.TestCase): #testing for each of the cases in the l
                 s.pop()
 
 
-class TestConstruction(Base):
+class TestConstruction(Base): #invalid homepage
         def test_homepage_is_current(self):
             self.b = BrowserHistory("home")
             self.assertEqual((self.b.current_page()["url"],len(self.b)),("home", 1))
@@ -70,7 +71,7 @@ class TestConstruction(Base):
                 with self.assertRaises(ValueError):
                     BrowserHistory("home",cap)
 
-class TestNavigation(Base):
+class TestNavigation(Base): #back,forward,boundaries,branching,current_page
     def setUp(self):
         self.b=make("a","b","c")                     
 
@@ -130,7 +131,7 @@ class TestNavigation(Base):
         self.assertTrue(page["timestamp"])
 
 
-class TestCapacity(Base):
+class TestCapacity(Base): #pruning the oldest page
     def test_prunes_oldest(self):
         self.b =make(*[f"p{i}" for i in range(1, 6)], cap=3, home="p0")
         self.assertEqual(self.b.pages(),["p3","p4","p5"])
@@ -152,7 +153,7 @@ class TestCapacity(Base):
         self.assertEqual(self.b.pages(),["p1","p3","p4"])
 
 
-class TestDeleteRestore(Base):
+class TestDeleteRestore(Base): #delete, LIFO structure,restore,cursor rules
     def setUp(self):
         self.b = make("a","b","c")
 
@@ -220,7 +221,7 @@ class TestDeleteRestore(Base):
         self.b.visit("fresh")
         self.assertEqual((self.b.pages(),self.b.back(5)),(["fresh"], "fresh"))
 
-class TestDisplay(Base):
+class TestDisplay(Base): #checking head to tail order.
     def test_marker_only_on_active_page_head_to_tail(self):
         self.b = make("a","b"); self.b.back(1)
         lines=self.b.history_string().splitlines()
@@ -232,7 +233,7 @@ class TestDisplay(Base):
         self.assertIn("[<]",buf.getvalue())
 
 
-class TestExportImport(Base):
+class TestExportImport(Base):  #rejecting corrupted files
     def setUp(self):
         self.dir=tempfile.TemporaryDirectory()
         self.path=os.path.join(self.dir.name, "hist.txt")
@@ -293,7 +294,7 @@ class TestExportImport(Base):
                 self.assertEqual(self.b.pages(),before)  
 
 
-class TestCLI(Base):
+class TestCLI(Base): #Common line interface handling start-up errors.
     def run_cmds(self,*cmds):
         self.b = BrowserHistory("home",capacity=3)
         buf=io.StringIO()

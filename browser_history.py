@@ -4,7 +4,7 @@ from stack import Stack
 
 DEFAULT_CAPACITY = 50
 _EXPORT_HEADER = "#BROWSER_HISTORY v1"
-
+#Remembers a deleted page and its old neighbours.
 class _DeletedRecord:
     __slots__ = ("node", "prev_anchor", "next_anchor",
                  "was_current", "fallback")
@@ -16,6 +16,7 @@ class _DeletedRecord:
         self.was_current = was_current
         self.fallback = fallback
 
+#browser history class manages the history of visited pages, allowing navigation, deletion, restoration, and import/export of history data.
 class BrowserHistory:
     def __init__(self, homepage, capacity=DEFAULT_CAPACITY):
         if not isinstance(capacity, int) or isinstance(capacity, bool) or capacity < 1:

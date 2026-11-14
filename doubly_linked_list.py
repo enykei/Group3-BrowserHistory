@@ -1,6 +1,6 @@
 from node import Node
 
-
+#head is the oldest page and tail is the newest page
 class DoublyLinkedList:
     def __init__(self):
         self.head = None
@@ -12,13 +12,15 @@ class DoublyLinkedList:
 
     def is_empty(self):
         return self._size == 0
-
+    
+    #saves the next node before appending
     def __iter__(self):
         cur = self.head
         while cur is not None:
             nxt = cur.next
             yield cur
             cur = nxt
+    
 
     # insertion
     def append_tail(self, node):
@@ -32,7 +34,7 @@ class DoublyLinkedList:
         node.in_list = True
         self._size += 1
         return node
-
+    #inserting after the tail == appending to the tail
     def insert_after(self, anchor, node):
         if anchor is self.tail:
             return self.append_tail(node)
@@ -43,7 +45,7 @@ class DoublyLinkedList:
         node.in_list = True
         self._size += 1
         return node
-
+    #Inserting before the head makes the new node the head of the list. 
     def insert_before(self, anchor, node):
         if anchor is self.head:
             node.prev = None
@@ -77,7 +79,8 @@ class DoublyLinkedList:
         if self.head is None:
             raise IndexError("remove from empty list")
         return self.remove(self.head)
-
+    
+    #cuts the forward history
     def truncate_after(self, node):
         removed = 0
         cur = node.next
@@ -93,6 +96,7 @@ class DoublyLinkedList:
         self._size -= removed
         return removed
 
+    #detaching every node after deleting the history 
     def clear(self):
         cur = self.head
         while cur is not None:
@@ -110,6 +114,7 @@ class DoublyLinkedList:
     def to_list(self):
         return [n.url for n in self]
 
+    #Used only by the test to verify the truth of the list
     def check_integrity(self):
         if self._size == 0:
             assert self.head is None and self.tail is None, "empty list must have no head/tail"

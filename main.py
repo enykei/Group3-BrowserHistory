@@ -19,7 +19,7 @@ MENU = """
 ====================================================
 """
 
-
+#reads the optional number after each command. 
 def _int_arg(parts, default=1):
     if len(parts) < 2:
         return default
@@ -28,7 +28,7 @@ def _int_arg(parts, default=1):
     except ValueError:
         raise ValueError(f"'{parts[1]}' is not a whole number")
 
-
+#splits the line into different parts and checks the command. 
 def handle(browser, line):
     parts = line.strip().split()
     if not parts:
@@ -88,7 +88,7 @@ def handle(browser, line):
         print(f"Unknown command '{cmd}'. Type 'menu' for the list.")
     return True
 
-
+#read the loop and handling each commands, bad inputs and errors.
 def main(argv):
     capacity = DEFAULT_CAPACITY
     if len(argv) > 1:
